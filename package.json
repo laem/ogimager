@@ -1,0 +1,14 @@
+{
+  "name": "ogimager",
+  "version": "0.0.1",
+  "description": "A server that has a chromium instance running and captures on demande the zone of a webpage with the id \"og-image-zone\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "express": "^4.18.2"
+  }
+}
