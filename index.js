@@ -25,7 +25,7 @@ const cache = apicache.options({
 }).middleware
 
 app.get('/', function (req, res) {
-  res.send('Hello World!')
+  res.send('Salut')
 })
 
 var server = app.listen(process.env.PORT || 3000, function () {
