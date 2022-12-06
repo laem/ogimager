@@ -44,7 +44,8 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
     return
   }
 
-  if (!browser) browser = await puppeteer.launch({ headless: true })
+  if (!browser)
+    browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] })
   const page = await browser.newPage()
 
   page
