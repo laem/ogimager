@@ -38,6 +38,7 @@ let browser
 
 app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
   const { url: pageToScreenshot, zoneId } = req.params
+  const timeout = req.query.timeout
 
   if (!pageToScreenshot) {
     res.status(400).send({ message: 'Invalid input' })
@@ -67,7 +68,7 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
 
   await page.goto(pageToScreenshot)
 
-  await timeout(3000)
+  await createTimeout(timeout || 3000)
 
   const element = await page.$('#' + zoneId || '#shareImage')
 
@@ -91,6 +92,6 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
   */
 })
 
-function timeout(ms) {
+function createTimeout(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
