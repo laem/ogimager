@@ -7,8 +7,22 @@
 // Node.js - Express sample application
 var express = require('express')
 const puppeteer = require('puppeteer')
+const apicache = require('apicache')
+const fs = require('fs')
 
 var app = express()
+
+const cacheDir = __dirname + '/cache'
+
+if (!fs.existsSync(cacheDir)) {
+  fs.mkdirSync(cacheDir)
+}
+const cache = apicache.options({
+  headers: {
+    'cache-control': 'no-cache',
+  },
+  debug: true,
+}).middleware
 
 app.get('/', function (req, res) {
   res.send('Hello World!')
@@ -20,7 +34,7 @@ var server = app.listen(process.env.PORT || 3000, function () {
   console.log('App listening at http://%s:%s', host, port)
 })
 
-app.get('/capture/:url/:zoneId?', async (req, res) => {
+app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
   const { url: pageToScreenshot, zoneId } = req.params
 
   if (!pageToScreenshot) {
@@ -50,7 +64,7 @@ app.get('/capture/:url/:zoneId?', async (req, res) => {
 
   await page.goto(pageToScreenshot)
 
-  await timeout(1000)
+  await timeout(2000)
 
   const element = await page.$('#' + zoneId || '#shareImage')
 
