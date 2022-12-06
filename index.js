@@ -1,6 +1,13 @@
+// TODO
+//  use apicache to server very fast answers
+//  higher timeout to bypass animation problems ?
+//  test
+//
+//
 // Node.js - Express sample application
-
 var express = require('express')
+const puppeteer = require('puppeteer')
+
 var app = express()
 
 app.get('/', function (req, res) {
@@ -12,3 +19,62 @@ var server = app.listen(process.env.PORT || 3000, function () {
   var port = server.address().port
   console.log('App listening at http://%s:%s', host, port)
 })
+
+app.get('/capture/:url/:zoneId?', async (req, res) => {
+  const { url: pageToScreenshot, zoneId } = req.params
+
+  if (!pageToScreenshot) {
+    res.status(400).send({ message: 'Invalid input' })
+    return
+  }
+
+  const browser = await puppeteer.launch({ headless: true })
+  const page = await browser.newPage()
+
+  page
+    .on('console', (message) => {
+      const type = message.type().substr(0, 3).toUpperCase()
+
+      if (type === 'ERR')
+        console.log(
+          `${message.type().substr(0, 3).toUpperCase()} ${message.text()}`
+        )
+    })
+    .on('pageerror', ({ message }) => console.log(message))
+    .on('response', (response) =>
+      console.log(`${response.status()} ${response.url()}`)
+    )
+    .on('requestfailed', (request) =>
+      console.log(`${request.failure().errorText} ${request.url()}`)
+    )
+
+  await page.goto(pageToScreenshot)
+
+  await timeout(1000)
+
+  const element = await page.$('#' + zoneId || '#shareImage')
+
+  const buffer = await element.screenshot({ type: 'png' })
+
+  //const img = Buffer.from(b64string, 'base64')
+
+  res.setHeader('content-type', 'image/png')
+  res.write(buffer, 'binary')
+  res.end(null, 'binary')
+
+  await page.close()
+  await browser.close()
+
+  /*
+  return {
+    statusCode: 200,
+    headers: { 'Content-Type': 'image/png' },
+    body: b64string.toString(),
+    isBase64Encoded: true,
+  }
+  */
+})
+
+function timeout(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
