@@ -34,6 +34,8 @@ var server = app.listen(process.env.PORT || 3000, function () {
   console.log('App listening at http://%s:%s', host, port)
 })
 
+let browser
+
 app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
   const { url: pageToScreenshot, zoneId } = req.params
 
@@ -42,7 +44,7 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
     return
   }
 
-  const browser = await puppeteer.launch({ headless: true })
+  if (!browser) browser = await puppeteer.launch({ headless: true })
   const page = await browser.newPage()
 
   page
@@ -64,7 +66,7 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
 
   await page.goto(pageToScreenshot)
 
-  await timeout(2000)
+  await timeout(3000)
 
   const element = await page.$('#' + zoneId || '#shareImage')
 
@@ -77,7 +79,6 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
   res.end(null, 'binary')
 
   await page.close()
-  await browser.close()
 
   /*
   return {
