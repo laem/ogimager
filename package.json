@@ -4,7 +4,8 @@
   "description": "A server that has a chromium instance running and captures on demande the zone of a webpage with the id \"og-image-zone\"",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "author": "",
   "license": "MIT",
