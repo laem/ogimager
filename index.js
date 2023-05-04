@@ -72,6 +72,11 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
 
   const element = await page.$('#' + zoneId || '#shareImage')
 
+  if (!element)
+    return res.status(404).send({
+      message: `Element #${zoneId} not found on page ${pageToScreenshot}`,
+    })
+
   const buffer = await element.screenshot({ type: 'png' })
 
   //const img = Buffer.from(b64string, 'base64')
