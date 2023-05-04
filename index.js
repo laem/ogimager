@@ -49,6 +49,10 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
     return
   }
 
+  console.log(
+    `Request to capture element #${zoneId} on page ${pageToScreenshot}`
+  )
+
   if (!browser)
     browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] })
   const page = await browser.newPage()
