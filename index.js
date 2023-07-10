@@ -42,6 +42,8 @@ let browser
 
 app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
   const { url: pageToScreenshot, zoneId } = req.params
+  const { x = 0, y = 0, width, height } = req.query
+
   const timeout = req.query.timeout
 
   if (!pageToScreenshot) {
@@ -85,7 +87,19 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
       message: `Element #${zoneId} not found on page ${pageToScreenshot}`,
     })
 
-  const buffer = await element.screenshot({ type: 'png' })
+  const buffer = await element.screenshot({
+    type: 'png',
+    ...(width
+      ? {
+          clip: {
+            x: +x,
+            y: +y,
+            width: +width,
+            height: +height,
+          },
+        }
+      : {}),
+  })
 
   //const img = Buffer.from(b64string, 'base64')
 
