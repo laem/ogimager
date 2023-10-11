@@ -91,9 +91,16 @@ app.get('/capture/:url/:zoneId?', cache('1 week'), async (req, res) => {
       message: `Element #${zoneId} not found on page ${pageToScreenshot}`,
     })
 
+  await page.setViewport({
+    width: +width,
+    height: +height,
+    deviceScaleFactor: 1,
+  })
+
   // could be useful https://github.com/puppeteer/puppeteer/issues/306
   const buffer = await element.screenshot({
     type: 'png',
+    captureBeyondViewport: false,
     ...(width
       ? {
           clip: {
